@@ -70,8 +70,8 @@ int main()
 
 	// Include every object in this vector to add it to the scene
 	std::vector<Shape*> scene0_objects = { &roof, &floor, &roof_triangle_front, &roof_triangle_back, &floor_triangle_front, &floor_triangle_back,
-		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, &test_ball, &right_mirror, &center_ball,
-		&ceiling_light};
+		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, &test_ball, &right_mirror,
+		&ceiling_light, &right_wall_light};
 
 	for (int i = 0; i < scene0_objects.size(); i++) {
 		//std::cout << "\nAdding obj " << i;
@@ -112,11 +112,11 @@ int main()
 
 	Camera cam1(eye_position, 1600, 900);
 	cam1.set_aa(5);
-	cam1.set_srays(2);
+	cam1.set_srays(5);
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "refraction_test3");
+	cam1.take_picture(scene0, "two_lights_test1");
 
 	printf("\nTime taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 	//cam1.render_normals(scene0, "scene0_normals_v2");
