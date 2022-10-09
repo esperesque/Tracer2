@@ -1,0 +1,6 @@
+﻿  Tracer2.cpp
+C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(20,1): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(23,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(30,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(35,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Tracer2.vcxproj -> C:\GitHub\Illumi\Tracer2\x64\Debug\Tracer2.exe
