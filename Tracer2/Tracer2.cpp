@@ -107,16 +107,41 @@ int main()
 		scene2.add_shape(scene2_objects[i]);
 	}
 
+	// Define cornell_scene, a cornell box
+
+	Rectangle cornell_floor(Point3D(-5, -5, -5), Point3D(-5, 5, -5), Point3D(10, -5, -5), Point3D(10, 5, -5), LAMBERT, LIGHT_GRAY);
+	Rectangle cornell_ceiling(Point3D(-5, 5, 5), Point3D(-5, -5, 5), Point3D(10, 5, 5), Point3D(10, -5, 5), LAMBERT, LIGHT_GRAY);
+	Rectangle cornell_backwall(Point3D(10, -5, -5), Point3D(10, 5, -5), Point3D(10, -5, 5), Point3D(10, 5, 5), LAMBERT, LIGHT_GRAY);
+	Rectangle cornell_rwall(Point3D(10, 5, -5), Point3D(-5, 5, -5), Point3D(10, 5, 5), Point3D(-5, 5, 5), LAMBERT, RED);
+	Rectangle cornell_lwall(Point3D(-5, -5, -5), Point3D(10, -5, -5), Point3D(-5, -5, 5), Point3D(10, -5, 5), LAMBERT, GREEN);
+	Rectangle cornell_light(Point3D(6.5, -1, 4.99), Point3D(6.5, 1, 4.99), Point3D(4.5, -1, 4.99), Point3D(4.5, 1, 4.99), LIGHT, WHITE);
+
+	Rectangle c_box_front(Point3D(5, -2, -5), Point3D(6, 0, -5), Point3D(5, -2, -3), Point3D(6, 0, -3), LAMBERT, WHITE);
+	Rectangle c_box_top(Point3D(5, -2, -3), Point3D(6, 0, -3), Point3D(7, -3, -3), Point3D(8, -1, -3), LAMBERT, WHITE);
+	Rectangle c_box_left(Point3D(7, -3, -5), Point3D(5, -2, -5), Point3D(7, -3, -3), Point3D(5, -2, -3), LAMBERT, WHITE);
+
+	Sphere c_sphere(Point3D(4.8, 2.3, -4), 1.0, LAMBERT, WHITE);
+
+	std::vector<Shape*> cornell_scene_objects = { &cornell_floor, &cornell_ceiling, &cornell_backwall, &cornell_rwall, &cornell_lwall,
+		&c_box_front, &c_box_top, &c_box_left, &c_sphere,
+		&cornell_light };
+	Scene cornell_scene;
+	for (int i = 0; i < cornell_scene_objects.size(); i++) {
+		cornell_scene.add_shape(cornell_scene_objects[i]);
+	}
+
 	// Define cameras, take pictures
 	Vec3 eye_position(0, 0, -1);
 
-	Camera cam1(eye_position, 1600, 900);
-	cam1.set_aa(5);
-	cam1.set_srays(5);
+	Camera cam1(eye_position, 800, 600);
+	cam1.set_aa(1);
+	cam1.set_srays(3);
+	cam1.set_depth(3); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "two_lights_test1");
+	cam1.take_picture(scene0, "material_test");
+	//cam1.render_normals(cornell_scene, "cornell_normals");
 
 	printf("\nTime taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 	//cam1.render_normals(scene0, "scene0_normals_v2");

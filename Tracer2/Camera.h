@@ -35,6 +35,8 @@ public:
 
 	void set_srays(int new_srays);
 
+	void set_depth(int new_depth) { max_depth = new_depth; };
+
 	// Render the normals of objects as colors for debug purposes
 	Color trace_normals(Scene myscene, const Ray& r) const;
 

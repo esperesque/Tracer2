@@ -24,6 +24,18 @@ public:
 	// used for shadow ray casting
 	bool is_blocked(Scene& room, double distance);
 
+	//Used for printing to console.
+	inline friend std::ostream& operator<<(std::ostream& out, const Ray& r) {
+		out << "\nRay depth:" << r.depth;
+		out << "\nRay origin: " << r.origin;
+		return out;
+	}
+
+public:
+	Ray* next_ray = nullptr;
+	Ray* prev_ray = nullptr;
+	int depth = 0;
+	Color radiance = Color(0, 0, 0);
 private:
 	Point3D origin;
 	Vec3 direction;

@@ -140,7 +140,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Tracer.cpp" />
     <ClCompile Include="Tracer2.cpp" />
     <ClCompile Include="Vec3.cpp" />
   </ItemGroup>
@@ -154,6 +156,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Tracer.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Vec3.h" />

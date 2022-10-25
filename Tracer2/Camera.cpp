@@ -6,7 +6,7 @@
 #include "Shape.h"
 #include "Utility.h"
 #include "Material.h"
-
+#include "Tracer.h"
 
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -35,7 +35,10 @@ void Camera::take_picture(Scene myscene, std::string filename) const {
 				auto v = (double(i) + random_double()) / (height - 1);
 
 				Ray r(eye_position, unit_vector(lower_left_corner + u * horizontal + v * vertical - eye_position));
-				pixel_color += send_ray(myscene, r, max_depth);
+				//pixel_color += send_ray(myscene, r, max_depth);
+				//pixel_color += trace_ray(myscene, r, max_depth);
+				//Ray last_ray = build_path(myscene, r);
+				pixel_color += path_tracer(myscene, r);
 			}
 
 			auto scale = 1.0 / samples_per_pixel;
@@ -273,12 +276,19 @@ Color Camera::send_ray(Scene myscene, const Ray& r, int depth) const {
 		double color_scale = lum / (myscene.get_lights() * shadow_rays);
 		obj_color *= color_scale;
 
-		return obj_color;
+		// uncomment this for direct light only
+		//return obj_color;
+
+		Point3D target = r.at(lowest_t) + object_normal + Vec3::random_unit_vector();
+		Ray ref_ray(r.at(lowest_t), target - r.at(lowest_t));
+
+		// This adds indirect light by reflecting a ray in a random direction. Using a constant 0.3 which is *very wrong* and should be replaced
+		// with a BRDF - once implemented
+		return obj_color + 0.3 * send_ray(myscene, ref_ray, depth - 1);
 
 		last_color = nearest_object->get_color();
 		// Get the color of the nearest object
-		Point3D target = r.at(lowest_t) + object_normal + Vec3::random_unit_vector();
-		Ray ref_ray(r.at(lowest_t), target - r.at(lowest_t));
+		
 
 		//Color this_color = 0.25 * nearest_object->get_color();
 		//return this_color + (0.5 * send_ray(myscene, ref_ray, depth - 1));
