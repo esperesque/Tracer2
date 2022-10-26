@@ -32,6 +32,11 @@ public:
 	// Return a random point on the surface
 	virtual Point3D get_random_point() = 0;
 
+	//Used to return surface normal
+	virtual Vec3 get_normal() = 0;
+
+	virtual double get_area() = 0;
+
 private:
 	Color color;
 	Material mat;

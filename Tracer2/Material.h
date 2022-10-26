@@ -38,7 +38,7 @@ public:
 	}
 
 	bool light() {
-		return(type == MaterialType::LIGHT);
+		return(type == MaterialType::LIGHT || lum > 0);
 	}
 
 	bool checkers() {

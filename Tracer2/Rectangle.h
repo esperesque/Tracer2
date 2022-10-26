@@ -91,6 +91,16 @@ public:
 		return color;
 	}
 
+	//Return the surface normal.
+	Vec3 get_normal() override {
+		return normal;
+	}
+
+	//Return the area of the rectangle.
+	double get_area() override {
+		return edge0.length() * edge1.length();
+	}
+
 private:
 	Point3D v0, v1, v2, v3;
 	Vec3 edge0, edge1;

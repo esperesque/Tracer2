@@ -1,5 +1,6 @@
 #include "Tracer.h"
 #include "Scene.h"
+# define M_PI           3.14159265358979323846 
 
 Color trace_ray(Scene myscene, const Ray& r, int depth) {
 	// Maximum recursive depth reached, return black
@@ -37,12 +38,54 @@ Color trace_ray(Scene myscene, const Ray& r, int depth) {
 }
 
 // Return the amount of light hitting a surface
-Color direct_light(Scene& myscene) {
+Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal, Color object_color) {
+
+	double radiance = 0; //Used to store the total radiance. 
+	double lambertian_reflector = 1 / M_PI; //The lambertian reflector is rho/pi, in this case rho = 1. 
+
 	for (int i = 0; i < myscene.get_lights(); i++) {
-		
+		//Get light source by index and its area.
+		auto light = myscene.ls(i);
+		double area = light->get_area();
+
+		double radiance_cur_ls = 0; //Used to store radiance for current light source.
+
+		for (int j = 0; j < shadow_rays; j++) {
+			//Get a random point on the light source
+			Point3D light_point = light->get_random_point();
+
+			//Define a vector and its length from the point of intersection to the light source.
+			Vec3 distance_vector = light_point - intersection_point;
+			double distance = distance_vector.length();
+
+			//Cast a shadow ray from the intersection point towards the random point on our light source. 
+			Ray shadowRay(intersection_point, unit_vector(distance_vector));
+
+			//Check if the shadow ray reached the light source or not. 
+			if (!shadowRay.is_blocked(myscene, distance)) {
+
+				//If it is not in shadow, calculate radiance. 
+				Vec3 Nx = object_normal;//Normal of hit object.
+				Vec3 Ny = light->get_normal();//Normal of light source. 
+
+				//Calculate the geometric factor
+				double cosOmegaX = dot(Nx, distance_vector) / abs(distance);
+				double cosOmegaY = dot(-Ny, distance_vector) / abs(distance);
+
+				double geometric_factor = cosOmegaX * cosOmegaY / pow(distance, 2);
+
+				radiance_cur_ls += geometric_factor; //Sum the contribution from the geometric factor.
+			}
+		}
+
+		radiance += (radiance_cur_ls * area * lambertian_reflector / shadow_rays); //Multiply the radiance from current light source with the area light source and lambertian reflector 
+																					//and divide with the number of shadow rays.
 	}
-	return Color(0, 0, 0);
+
+	//Return the radiance multiplied with color of the object.
+	return (radiance * object_color);
 }
+
 
 Color path_tracer(Scene myscene, Ray& r) {
 	// Build a ray path and save the final ray
