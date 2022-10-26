@@ -78,7 +78,7 @@ Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, 
 			}
 		}
 
-		radiance += (radiance_cur_ls * area * lambertian_reflector / shadow_rays); //Multiply the radiance from current light source with the area light source and lambertian reflector 
+		radiance += 20 * (radiance_cur_ls * area * lambertian_reflector / shadow_rays); //Multiply the radiance from current light source with the area light source and lambertian reflector 
 																					//and divide with the number of shadow rays.
 	}
 
@@ -176,7 +176,7 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 	if (nearest_object != nullptr) {
 		
 		// Get the radiance from direct light and such
-		origin_ray.radiance = nearest_object->get_material().get_radiance();
+		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
 
 		// Reflect the ray
 		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);

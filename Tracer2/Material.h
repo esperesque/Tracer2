@@ -31,7 +31,7 @@ public:
 
 	Ray* reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
-	Color get_radiance();
+	Color get_radiance(Scene myscene, Ray& r, hit_record rec);
 
 	bool is_mirror() {
 		return(type == MaterialType::MIRROR);

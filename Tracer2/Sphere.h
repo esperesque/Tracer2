@@ -49,6 +49,14 @@ public:
 		return true;
 	}
 
+	Vec3 get_normal() override {
+		return { 0,0,0 };
+	}
+
+	double get_area() override {
+		return 0;
+	}
+
 	Point3D get_random_point() {
 		// need to figure out a way to return a point on the sphere that is facing the object. for now, set to whatever and assume
 		// spherical light sources don't work.

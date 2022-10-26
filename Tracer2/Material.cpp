@@ -3,6 +3,7 @@
 #include "Vec3.h"
 #include "Scene.h"
 #include "Ray.h"
+#include "Shape.h"
 
 Color Material::scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth) {
 	if (reflectivity == 1) {
@@ -26,10 +27,10 @@ Color Material::scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth
 }
 
 // Get the surface color from direct light and such
-Color Material::get_radiance() {
+Color Material::get_radiance(Scene myscene, Ray& r, hit_record rec) {
 	if (!mirror) {
 		// do direct light calculations
-
+		return direct_light(myscene, 3, r.at(rec.t), rec.normal, color);
 	}
 	return color;
 }
