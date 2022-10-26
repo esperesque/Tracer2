@@ -12,6 +12,9 @@ public:
 	// Constructor with arguments
 	Sphere(Point3D orig, double rad, Material m, Color clr) : origin(orig), radius(rad), mat(m), color(clr) {}
 
+	// Constructor without color, assumes color is defined within the material
+	Sphere(Point3D orig, double rad, Material m) : origin(orig), radius(rad), mat(m) {}
+
 	// Check if there is a collision with the ray r
 	bool collision(const Ray& r, hit_record& rec) override {
 		Vec3 oc = r.get_origin() - origin;

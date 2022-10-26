@@ -173,7 +173,7 @@ Color Camera::send_ray(Scene myscene, const Ray& r, int depth) const {
 	Color surface_color;
 
 	if (nearest_object != nullptr) {
-		if (nearest_object->get_material().mirror()) {
+		if (nearest_object->get_material().is_mirror()) {
 			// object is a mirror, so get a perfect reflection
 			//Formula is: d - 2(dot(d,n))n
 			auto t = lowest_t;

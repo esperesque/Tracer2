@@ -36,6 +36,14 @@ Color trace_ray(Scene myscene, const Ray& r, int depth) {
 	return Color(0, 0, 0);
 }
 
+// Return the amount of light hitting a surface
+Color direct_light(Scene& myscene) {
+	for (int i = 0; i < myscene.get_lights(); i++) {
+		
+	}
+	return Color(0, 0, 0);
+}
+
 Color path_tracer(Scene myscene, Ray& r) {
 	// Build a ray path and save the final ray
 	//std::cout << "\nRay sent from " << r.get_origin();
@@ -123,13 +131,26 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 	}
 
 	if (nearest_object != nullptr) {
-		// There was a collision
-		//std::cout << "\nCollision occured at: ";
-		//std::cout << origin_ray.at(nearest_rec.t);
+		
+		// Get the radiance from direct light and such
+		origin_ray.radiance = nearest_object->get_material().get_radiance();
 
+		// Reflect the ray
+		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
+		origin_ray.next_ray = ref_ray;
+		ref_ray->prev_ray = &origin_ray;
+		return build_path(myscene, *ref_ray);
+		
+		//return origin_ray;
+
+		// These cases are all placeholders and should be removed
 		if (nearest_object->get_material().light()) {
 			// terminate path
 			origin_ray.radiance = Color(1, 1, 1);
+			return origin_ray;
+		}
+		else if (nearest_object->get_material().lambert()) {
+			origin_ray.radiance = Color(0, 1, 0);
 			return origin_ray;
 		}
 		else {
@@ -163,7 +184,10 @@ Color terminate_ray(Scene myscene, Ray& r) {
 		return r.radiance;
 	}
 	else {
-		//std::cout << "\nTerminating " << r;
+		// This line should result in only direct lighting
 		return terminate_ray(myscene, *r.prev_ray);
+
+		// uncomment this when working on indirect lighting/ray paths
+		//return r.radiance + terminate_ray(myscene, *r.prev_ray);
 	}	
 }

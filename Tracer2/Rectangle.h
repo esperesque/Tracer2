@@ -34,6 +34,13 @@ public:
 		normal = unit_vector(cross(edge0, edge1));
 	}
 
+	// Constructor without color
+	Rectangle(Point3D inv0, Point3D inv1, Point3D inv2, Point3D inv3, Material m) : v0(inv0), v1(inv1), v2(inv2), v3(inv3), mat(m){
+		edge0 = calculate_edge(v0, v2);
+		edge1 = calculate_edge(v0, v1);
+		normal = unit_vector(cross(edge0, edge1));
+	}
+
 	// Check if there is a collision with the ray r
 	bool collision(const Ray& r, hit_record& rec) override {
 		// Step 1: Find where the ray intersects the infinite plane containing the rectangle

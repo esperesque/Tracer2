@@ -18,6 +18,8 @@ public:
 	Material() = default;
 
 	// Constructor with arguments
+	Material(bool mir, double in_rho, Color clr, double pert, double in_lum) : mirror(mir), rho(in_rho), color(clr), perturbation(pert), lum(in_lum) {}
+
 	Material(double ref) : reflectivity(ref) {}
 
 	Material(MaterialType mat) : type(mat){}
@@ -27,7 +29,11 @@ public:
 	// Calculate surface interactions (reflection/transmission) and recursively call trace_ray
 	Color scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
-	bool mirror() {
+	Ray* reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth);
+
+	Color get_radiance();
+
+	bool is_mirror() {
 		return(type == MaterialType::MIRROR);
 	}
 
@@ -43,6 +49,10 @@ public:
 		return(type == MaterialType::GLASS);
 	}
 
+	bool lambert() {
+		return(type == MaterialType::LAMBERT);
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, Material& mat) {
 		if (mat.type == MaterialType::LAMBERT) {
 			os << "Material: Lambertian";
@@ -55,6 +65,12 @@ public:
 		}
 		return os;
 	}
+public:
+	double rho; // The probability of ray termination
+	double perturbation; // The radius of a unit sphere in which the normal is dislocated
+	bool mirror; // Whether the material reflects perfectly
+	Color color; // Color of the material
+	double lum; // Intensity of the light; set to 0 if material is not a light source
 
 private:
 	// Material properties: Reflectivity

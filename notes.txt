@@ -1,0 +1,5 @@
+==MATERIAL PROPERTIES==
+
+rho = The probability of ray termination. Float value between 0 and 1.
+color = the surface color of the material
+mirror = bool indicating whether the material should reflect perfectly

@@ -15,6 +15,12 @@ public:
 		edge1 = calculate_edge(v0, v2);
 		normal = unit_vector(cross(edge0, edge1));
 	}
+	// Constructor without color
+	Triangle(Point3D ver0, Point3D ver1, Point3D ver2, Material m) : v0(ver0), v1(ver1), v2(ver2), mat(m){
+		edge0 = calculate_edge(v0, v1);
+		edge1 = calculate_edge(v0, v2);
+		normal = unit_vector(cross(edge0, edge1));
+	}
 
 	bool collision(const Ray& ray, hit_record& rec) override {
 		const float EPSILON = 0.0001; //a very small value used to check if determinant is close to 0.
