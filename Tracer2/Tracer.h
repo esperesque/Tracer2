@@ -19,6 +19,9 @@ void print_raypath(Ray& first_ray);
 
 void print_reverse_raypath(Ray& last_ray);
 
+// Delete every ray item in a ray path to remove memory leaks
+void delete_raypath(Ray* first_ray);
+
 // Takes a ray originating from the camera viewport, builds a ray path and then returns the final ray (termination)
 Ray build_path(Scene myscene, Ray& origin_ray);
 

@@ -47,7 +47,13 @@ Color path_tracer(Scene myscene, Ray& r) {
 	//print_raypath(r);
 	//print_reverse_raypath(last_ray);
 
-	return terminate_ray(myscene, last_ray);
+	Color pixel_color = terminate_ray(myscene, last_ray);
+
+	// Call delete_raypath after on the first ray of the raypath to delete it.
+	// Prevents memory leaks
+	delete_raypath(&r);
+
+	return pixel_color;
 }
 
 void print_raypath(Ray& first_ray) {
@@ -72,6 +78,15 @@ void print_reverse_raypath(Ray& last_ray) {
 		i--;
 		r = r->prev_ray;
 		if (r == nullptr) break;
+	}
+}
+
+void delete_raypath(Ray* first_ray) {
+	Ray* r = first_ray->next_ray;
+	while (r != nullptr) {
+		Ray* b = r;
+		r = r->next_ray;
+		delete(b);
 	}
 }
 
