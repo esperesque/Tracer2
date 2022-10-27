@@ -12,8 +12,8 @@ class Ray;
 
 Color trace_ray(Scene myscene, const Ray& r, int depth);
 
-// Return the amount of light hitting a surface
-Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal, Color object_color);
+// Return the amount of direct light hitting a surface
+double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal);
 
 // The path tracer starts by building a path, then goes through the path in reverse and returns a color
 Color path_tracer(Scene myscene, Ray& r);

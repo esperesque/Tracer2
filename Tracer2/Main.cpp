@@ -89,14 +89,14 @@ int main()
 	// Define cameras, take pictures
 	Vec3 eye_position(0, 0, -1);
 
-	Camera cam1(eye_position, 800, 600);
-	cam1.set_aa(1);
-	cam1.set_srays(3);
+	Camera cam1(eye_position, 800, 800);
+	cam1.set_aa(1); //set anti-aliasing
+	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
 	cam1.set_depth(3); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "material_test");
+	cam1.take_picture(scene0, "indirect_light_test");
 
 	printf("\nTime taken: %.2fs\n", ((double)clock() - tStart) / CLOCKS_PER_SEC);
 }

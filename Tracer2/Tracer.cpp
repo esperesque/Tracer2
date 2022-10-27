@@ -37,8 +37,8 @@ Color trace_ray(Scene myscene, const Ray& r, int depth) {
 	return Color(0, 0, 0);
 }
 
-// Return the amount of light hitting a surface
-Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal, Color object_color) {
+// Return the amount of direct light hitting a surface
+double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal) {
 
 	double radiance = 0; //Used to store the total radiance. 
 	double lambertian_reflector = 1 / M_PI; //The lambertian reflector is rho/pi, in this case rho = 1. 
@@ -83,9 +83,23 @@ Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, 
 	}
 
 	//Return the radiance multiplied with color of the object.
-	return (radiance * object_color);
+	return radiance;
 }
 
+
+//// Return the amount of indirect light hitting a surface
+//Color indirect_light(Scene& myscene, Vec3 object_normal, Ray& r) {
+//	Vec3 X = unit_vector(r.get_direction() - (dot(r.get_direction(), object_normal) * object_normal));
+//	Vec3 Z = object_normal;
+//	Vec3 Y = cross((X * -1.0f), Z);
+//
+//	//Reflection from a lambertian surface is uniformly distributed in all directions, thus the PDF is constant and equals 1/2pi.
+//	const float PDF = 1 / (2 * M_PI);
+//
+//	for (int i = 0; i < myscene.get_lights(); i++) {
+//
+//	}
+//}
 
 Color path_tracer(Scene myscene, Ray& r) {
 	// Build a ray path and save the final ray
@@ -100,6 +114,67 @@ Color path_tracer(Scene myscene, Ray& r) {
 
 	return pixel_color;
 }
+
+Ray build_path(Scene myscene, Ray& origin_ray) {
+
+	if (origin_ray.depth >= 7) {
+		// sanity check
+		return origin_ray;
+	}
+
+	hit_record rec;
+	hit_record nearest_rec; // to store the hit record specifically for the nearest object hit
+	double lowest_t = std::numeric_limits<double>::max();
+	Shape* nearest_object = nullptr;
+	Ray* ref_ray;
+
+	// Check every shape in myscene for a collision
+	for (int i = 0; i < myscene.get_size(); i++) {
+
+		if (myscene[i]->collision(origin_ray, rec)) {
+			if (rec.t < lowest_t && rec.t > 0.001) {
+				// Update nearest object
+				nearest_rec = rec;
+				lowest_t = rec.t;
+				nearest_object = myscene[i];
+			}
+		}
+	}
+
+	if (nearest_object != nullptr) {
+		
+		// Get the radiance from direct light, and color as well as rho for the material.
+		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
+		origin_ray.color = nearest_object->get_material().get_color();
+		origin_ray.rho = nearest_object->get_material().get_rho();
+
+		// Reflect the ray
+		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
+		origin_ray.next_ray = ref_ray;
+		ref_ray->prev_ray = &origin_ray;
+		return build_path(myscene, *ref_ray);
+	}
+	else {
+		// No collision, terminate ray
+		origin_ray.color = { 1,0,0 };
+		return origin_ray;
+	}
+}
+
+Color terminate_ray(Scene myscene, Ray& r) {
+
+	//Base case
+	if (r.prev_ray == nullptr)
+		//Direct light
+		return r.radiance * r.color;
+	else 
+		//Recursion to calculate indirect light, add the direct light to the result. 
+		return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray);
+
+	//Används ej, försökte ta med rho (hur mycket ljus som reflekteras, bilden blev bara svart).
+	//return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray) * r.rho;
+}
+
 
 // Debug function, prints every ray inside a raypath
 void print_raypath(Ray& first_ray) {
@@ -135,65 +210,4 @@ void delete_raypath(Ray* first_ray) {
 		r = r->next_ray;
 		delete(b);
 	}
-}
-
-Ray build_path(Scene myscene, Ray& origin_ray) {
-
-	if (origin_ray.depth >= 7) {
-		// sanity check
-		return origin_ray;
-	}
-
-	hit_record rec;
-	hit_record nearest_rec; // to store the hit record specifically for the nearest object hit
-	double lowest_t = 10000;
-	Shape* nearest_object = nullptr;
-	Ray* ref_ray;
-
-	// Check every shape in myscene for a collision
-	for (int i = 0; i < myscene.get_size(); i++) {
-
-		if (myscene[i]->collision(origin_ray, rec)) {
-			if (rec.t < lowest_t && rec.t > 0.001) {
-				// Update nearest object
-				nearest_rec = rec;
-				lowest_t = rec.t;
-				nearest_object = myscene[i];
-			}
-		}
-	}
-
-	if (nearest_object != nullptr) {
-		
-		// Get the radiance from direct light and such
-		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
-
-		// Reflect the ray
-		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
-		origin_ray.next_ray = ref_ray;
-		ref_ray->prev_ray = &origin_ray;
-		return build_path(myscene, *ref_ray);
-	}
-	else {
-		// No collision, terminate ray
-		origin_ray.radiance = Color(1, 0, 0);
-		return origin_ray;
-	}
-}
-
-Color terminate_ray(Scene myscene, Ray& r) {
-	// If the ray terminates on a light -- the radiance is (1, 1, 1)
-	// If the ray terminates on a lambertian surface, the radiance is the brightness of the surface after direct light calculation
-
-	if (r.prev_ray == nullptr) {
-		// This is the final ray - we can just return the radiance of this ray.
-		return r.radiance;
-	}
-	else {
-		// This line should result in only direct lighting
-		return terminate_ray(myscene, *r.prev_ray);
-
-		// uncomment this when working on indirect lighting/ray paths
-		//return r.radiance + terminate_ray(myscene, *r.prev_ray);
-	}	
 }

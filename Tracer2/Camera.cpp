@@ -114,7 +114,7 @@ void Camera::set_srays(int new_srays) {
 Color Camera::trace_normals(Scene myscene, const Ray& r) const {
 	Shape* nearest_object = nullptr;
 	Vec3 object_normal;
-	double lowest_t = 10000;
+	double lowest_t = std::numeric_limits<double>::max();
 
 	for (int i = 0; i < myscene.get_size(); i++) {
 		hit_record rec;

@@ -35,7 +35,9 @@ public:
 	Ray* next_ray = nullptr;
 	Ray* prev_ray = nullptr;
 	int depth = 0;
-	Color radiance = Color(0, 0, 0);
+	Color color = Color(0, 0, 0);
+	double rho = 0;
+	double radiance = 0;
 private:
 	Point3D origin;
 	Vec3 direction;

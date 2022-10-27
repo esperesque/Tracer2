@@ -29,9 +29,17 @@ public:
 	// Calculate surface interactions (reflection/transmission) and recursively call trace_ray
 	Color scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
+	Color get_color() {
+		return color;
+	}
+
 	Ray* reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
-	Color get_radiance(Scene myscene, Ray& r, hit_record rec);
+	double get_radiance(Scene myscene, Ray& r, hit_record rec);
+
+	double get_rho() {
+		return rho;
+	}
 
 	bool is_mirror() {
 		return(type == MaterialType::MIRROR);
