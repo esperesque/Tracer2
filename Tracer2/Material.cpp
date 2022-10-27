@@ -28,6 +28,9 @@ Color Material::scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth
 
 // Get the surface color from direct light and such
 Color Material::get_radiance(Scene myscene, Ray& r, hit_record rec) {
+	if (lum > 0) {
+		return color;
+	}
 	if (!mirror) {
 		// do direct light calculations
 		return direct_light(myscene, 3, r.at(rec.t), rec.normal, color);

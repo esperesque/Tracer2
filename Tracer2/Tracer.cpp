@@ -173,31 +173,6 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 		origin_ray.next_ray = ref_ray;
 		ref_ray->prev_ray = &origin_ray;
 		return build_path(myscene, *ref_ray);
-		
-		//return origin_ray;
-
-		// These cases are all placeholders and should be removed
-		if (nearest_object->get_material().light()) {
-			// terminate path
-			origin_ray.radiance = Color(1, 1, 1);
-			return origin_ray;
-		}
-		else if (nearest_object->get_material().lambert()) {
-			origin_ray.radiance = Color(0, 1, 0);
-			return origin_ray;
-		}
-		else {
-			// TEMP: reflect as if a perfect mirror and add to the ray path
-			// THIS IS WRONG AND SHOULD BE REPLACED WITH A MATERIAL-SPECIFIC SCATTER FUNCTION
-			auto t = nearest_rec.t;
-
-			ref_ray = new Ray(origin_ray.at(t), unit_vector(origin_ray.get_direction() - 2 * dot(origin_ray.get_direction(), nearest_rec.normal) * nearest_rec.normal));
-			origin_ray.next_ray = ref_ray;
-			ref_ray->prev_ray = &origin_ray;
-			ref_ray->depth = origin_ray.depth + 1;
-
-			return build_path(myscene, *ref_ray);
-		}
 	}
 	else {
 		// No collision, terminate ray
