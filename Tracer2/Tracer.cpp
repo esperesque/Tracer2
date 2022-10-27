@@ -89,15 +89,9 @@ Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, 
 
 Color path_tracer(Scene myscene, Ray& r) {
 	// Build a ray path and save the final ray
-	//std::cout << "\nRay sent from " << r.get_origin();
-
 	Ray last_ray = build_path(myscene, r);
-	//std::cout << "\nDepth of the last ray is " << last_ray.depth;
 
-	//std::cout << "\nPrinting raypath:";
-	//print_raypath(r);
-	//print_reverse_raypath(last_ray);
-
+	// Start from the final ray in the ray path and calculate the resulting color
 	Color pixel_color = terminate_ray(myscene, last_ray);
 
 	// Call delete_raypath after on the first ray of the raypath to delete it.
@@ -107,6 +101,7 @@ Color path_tracer(Scene myscene, Ray& r) {
 	return pixel_color;
 }
 
+// Debug function, prints every ray inside a raypath
 void print_raypath(Ray& first_ray) {
 	Ray* r = &first_ray;
 	int i = 1;
@@ -121,6 +116,7 @@ void print_raypath(Ray& first_ray) {
 	}
 }
 
+// Same as above, but in reverse from the last ray
 void print_reverse_raypath(Ray& last_ray) {
 	Ray* r = &last_ray;
 	int i = last_ray.depth + 1;
@@ -142,13 +138,7 @@ void delete_raypath(Ray* first_ray) {
 }
 
 Ray build_path(Scene myscene, Ray& origin_ray) {
-	//std::cout << "\nProcessing ray of depth " << origin_ray.depth;
-	if (origin_ray.prev_ray == nullptr) {
-		//std::cout << "\nPrevious ray is null";
-	}
-	else {
-		//std::cout << "\nPrevious ray has depth " << origin_ray.prev_ray->depth;
-	}
+
 	if (origin_ray.depth >= 7) {
 		// sanity check
 		return origin_ray;
@@ -200,14 +190,12 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 			// TEMP: reflect as if a perfect mirror and add to the ray path
 			// THIS IS WRONG AND SHOULD BE REPLACED WITH A MATERIAL-SPECIFIC SCATTER FUNCTION
 			auto t = nearest_rec.t;
-			//std::cout << "\nOrigin of the reflected ray: ";
-			//std::cout << origin_ray.at(t);
+
 			ref_ray = new Ray(origin_ray.at(t), unit_vector(origin_ray.get_direction() - 2 * dot(origin_ray.get_direction(), nearest_rec.normal) * nearest_rec.normal));
 			origin_ray.next_ray = ref_ray;
 			ref_ray->prev_ray = &origin_ray;
 			ref_ray->depth = origin_ray.depth + 1;
-			//std::cout << "\nConnected ray of depth " << origin_ray.depth << " to ray of depth " << ref_ray->depth;
-			//std::cout << "\nOrigin ray now connects to ray of depth " << origin_ray.next_ray->depth;
+
 			return build_path(myscene, *ref_ray);
 		}
 	}
