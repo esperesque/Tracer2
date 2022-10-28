@@ -151,29 +151,30 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 
 Color terminate_ray(Scene myscene, Ray& r) {
 
-	/*Color indirect{0,0,0};
+	Color indirect{0,0,0};
 	Color direct = r.radiance;
 	Color result{ 1,1,1 };
 
 	while (r.prev_ray != nullptr) {
 		direct = r.radiance;
 		if (r.next_ray != nullptr)
-			indirect = r.next_ray->radiance * r.next_ray->rho;
+			indirect = r.next_ray->radiance * r.next_ray->rho/M_PI;
 		result = direct + indirect;
 		r.radiance = result;
 		r = *r.prev_ray;
 	}
 
-	return direct;
-	*/
+	return result;
+	
 
-	//Base case
+	/*//Base case
 	if (r.prev_ray == nullptr)
 		return r.radiance;
 
 	//Uncomment for direct light.
 	//return (terminate_ray(myscene, *r.prev_ray));
 	return (r.radiance * r.rho/M_PI + terminate_ray(myscene, *r.prev_ray));
+	*/
 }
 
 
