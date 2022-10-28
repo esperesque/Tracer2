@@ -37,6 +37,7 @@ int main()
 	Material orange_matte(false, 0.6, ORANGE, 0, 0); // Orange material with a rho of 0.6
 	Material floor_material(false, 0.3, Color(0.2, 0.6, 0.4), 0, 0);
 	Material wall_material(false, 0.3, Color(0.3, 0.2, 0.7), 0, 0);
+	Material white_walls_material(false, 0.3, WHITE, 0, 0);
 	Material mirror(true, 1, WHITE, 0, 0); // mirrors should be white according to Mark's slides
 	Material frosted_mirror(true, 1, WHITE, 0.4, 0); // mirror with a perturbed reflection
 	Material white_light(false, 0, WHITE, 0, 20);
@@ -56,14 +57,14 @@ int main()
 	Rectangle l_wall_f(Point3D(10, -6, -5), Point3D(13, 0, -5), Point3D(10, -6, 5), Point3D(13, 0, 5), wall_material);
 	// Side walls
 	Rectangle r_wall_s(Point3D(10, 6, -5), Point3D(0, 6, -5), Point3D(10, 6, 5), Point3D(0, 6, 5), wall_material);
-	Rectangle l_wall_s(Point3D(0, -6, -5), Point3D(10, -6, -5), Point3D(0, -6, 5), Point3D(10, -6, 5), wall_material);
+	Rectangle l_wall_s(Point3D(0, -6, -5), Point3D(10, -6, -5), Point3D(0, -6, 5), Point3D(10, -6, 5), white_walls_material);
 	// Back walls
 	Rectangle r_wall_b(Point3D(0, 6, -5), Point3D(-3, 0, -5), Point3D(0, 6, 5), Point3D(-3, 0, 5), wall_material);
 	Rectangle l_wall_b(Point3D(-3, 0, -5), Point3D(0, -6, -5), Point3D(-3, 0, 5), Point3D(0, -6, 5), wall_material);
 
 	// Objects apart from the walls
 	//Sphere test_ball(Point3D(8, -2, -3.4), 1.6, LAMBERT, GREEN);
-	Sphere test_ball(Point3D(8, -2, -3.4), 1.6, orange_matte);
+	Sphere test_ball(Point3D(8, -3, -3.4), 1.6, orange_matte);
 	Rectangle right_mirror(Point3D(12.2, 1.2, -4), Point3D(10.4, 4.8, -4), Point3D(12.2, 1.2, 4), Point3D(10.4, 4.8, 4), mirror);
 
 	// Lights
@@ -84,9 +85,9 @@ int main()
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(1); //set anti-aliasing
-	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
-	cam1.set_depth(3); // set maximum recursive depth
+	cam1.set_aa(3); //set anti-aliasing
+	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp! TODO
+	cam1.set_depth(3); // set maximum recursive depth. HÅRDKODAD!! TODO
 
 	clock_t tStart = clock();
 

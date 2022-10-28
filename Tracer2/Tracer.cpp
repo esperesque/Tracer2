@@ -61,9 +61,10 @@ Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, 
 			//Cast a shadow ray from the intersection point towards the random point on our light source. 
 			Ray shadowRay(intersection_point, unit_vector(distance_vector));
 
+			double BRDF = dot(unit_vector(distance_vector), object_normal);
+
 			//Check if the shadow ray reached the light source or not. 
 			if (!shadowRay.is_blocked(myscene, distance)) {
-
 				//If it is not in shadow, calculate radiance. 
 				Vec3 Nx = object_normal;//Normal of hit object.
 				Vec3 Ny = light->get_normal();//Normal of light source. 
@@ -74,7 +75,7 @@ Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, 
 
 				Color geometric_factor = object_color * cosOmegaX * cosOmegaY / pow(distance, 2);
 
-				radiance_cur_ls += geometric_factor; //Sum the contribution from the geometric factor.
+				radiance_cur_ls += (BRDF * geometric_factor); //Sum the contribution from the geometric factor.
 			}
 		}
 
@@ -151,30 +152,13 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 
 Color terminate_ray(Scene myscene, Ray& r) {
 
-	Color indirect{0,0,0};
-	Color direct = r.radiance;
-	Color result{ 1,1,1 };
-
-	while (r.prev_ray != nullptr) {
-		direct = r.radiance;
-		if (r.next_ray != nullptr)
-			indirect = r.next_ray->radiance * r.next_ray->rho/M_PI;
-		result = direct + indirect;
-		r.radiance = result;
-		r = *r.prev_ray;
-	}
-
-	return result;
-	
-
-	/*//Base case
+	//Base case
 	if (r.prev_ray == nullptr)
 		return r.radiance;
 
 	//Uncomment for direct light.
 	//return (terminate_ray(myscene, *r.prev_ray));
 	return (r.radiance * r.rho/M_PI + terminate_ray(myscene, *r.prev_ray));
-	*/
 }
 
 
