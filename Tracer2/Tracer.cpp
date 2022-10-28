@@ -38,9 +38,9 @@ Color trace_ray(Scene myscene, const Ray& r, int depth) {
 }
 
 // Return the amount of direct light hitting a surface
-double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal) {
+Color direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point, Vec3 object_normal, Vec3 object_color) {
 
-	double radiance = 0; //Used to store the total radiance. 
+	Color radiance = { 0,0,0 }; //Used to store the total radiance. 
 	double lambertian_reflector = 1 / M_PI; //The lambertian reflector is rho/pi, in this case rho = 1. 
 
 	for (int i = 0; i < myscene.get_lights(); i++) {
@@ -48,7 +48,7 @@ double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point,
 		auto light = myscene.ls(i);
 		double area = light->get_area();
 
-		double radiance_cur_ls = 0; //Used to store radiance for current light source.
+		Color radiance_cur_ls = { 0,0,0 }; //Used to store radiance for current light source.
 
 		for (int j = 0; j < shadow_rays; j++) {
 			//Get a random point on the light source
@@ -72,7 +72,7 @@ double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point,
 				double cosOmegaX = dot(Nx, distance_vector) / abs(distance);
 				double cosOmegaY = dot(-Ny, distance_vector) / abs(distance);
 
-				double geometric_factor = cosOmegaX * cosOmegaY / pow(distance, 2);
+				Color geometric_factor = object_color * cosOmegaX * cosOmegaY / pow(distance, 2);
 
 				radiance_cur_ls += geometric_factor; //Sum the contribution from the geometric factor.
 			}
@@ -85,21 +85,6 @@ double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point,
 	//Return the radiance multiplied with color of the object.
 	return radiance;
 }
-
-
-//// Return the amount of indirect light hitting a surface
-//Color indirect_light(Scene& myscene, Vec3 object_normal, Ray& r) {
-//	Vec3 X = unit_vector(r.get_direction() - (dot(r.get_direction(), object_normal) * object_normal));
-//	Vec3 Z = object_normal;
-//	Vec3 Y = cross((X * -1.0f), Z);
-//
-//	//Reflection from a lambertian surface is uniformly distributed in all directions, thus the PDF is constant and equals 1/2pi.
-//	const float PDF = 1 / (2 * M_PI);
-//
-//	for (int i = 0; i < myscene.get_lights(); i++) {
-//
-//	}
-//}
 
 Color path_tracer(Scene myscene, Ray& r) {
 	// Build a ray path and save the final ray
@@ -145,8 +130,11 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 		
 		// Get the radiance from direct light, and color as well as rho for the material.
 		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
-		origin_ray.color = nearest_object->get_material().get_color();
 		origin_ray.rho = nearest_object->get_material().get_rho();
+
+		//If hit light source - don't send a reflective ray!
+		if (nearest_object->get_material().light())
+			return origin_ray;
 
 		// Reflect the ray
 		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
@@ -156,23 +144,36 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 	}
 	else {
 		// No collision, terminate ray
-		origin_ray.color = { 1,0,0 };
+		origin_ray.radiance = { 0,0,0 };
 		return origin_ray;
 	}
 }
 
 Color terminate_ray(Scene myscene, Ray& r) {
 
+	/*Color indirect{0,0,0};
+	Color direct = r.radiance;
+	Color result{ 1,1,1 };
+
+	while (r.prev_ray != nullptr) {
+		direct = r.radiance;
+		if (r.next_ray != nullptr)
+			indirect = r.next_ray->radiance * r.next_ray->rho;
+		result = direct + indirect;
+		r.radiance = result;
+		r = *r.prev_ray;
+	}
+
+	return direct;
+	*/
+
 	//Base case
 	if (r.prev_ray == nullptr)
-		//Direct light
-		return r.radiance * r.color;
-	else 
-		//Recursion to calculate indirect light, add the direct light to the result. 
-		return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray);
+		return r.radiance;
 
-	//Används ej, försökte ta med rho (hur mycket ljus som reflekteras, bilden blev bara svart).
-	//return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray) * r.rho;
+	//Uncomment for direct light.
+	//return (terminate_ray(myscene, *r.prev_ray));
+	return (r.radiance * r.rho/M_PI + terminate_ray(myscene, *r.prev_ray));
 }
 
 

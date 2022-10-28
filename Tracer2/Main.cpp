@@ -35,8 +35,8 @@ int main()
 	Material GLASS(MaterialType::GLASS);
 
 	Material orange_matte(false, 0.6, ORANGE, 0, 0); // Orange material with a rho of 0.6
-	Material floor_material(false, 0.6, Color(0.2, 0.6, 0.4), 0, 0);
-	Material wall_material(false, 0.6, Color(0.3, 0.2, 0.7), 0, 0);
+	Material floor_material(false, 0.3, Color(0.2, 0.6, 0.4), 0, 0);
+	Material wall_material(false, 0.3, Color(0.3, 0.2, 0.7), 0, 0);
 	Material mirror(true, 1, WHITE, 0, 0); // mirrors should be white according to Mark's slides
 	Material frosted_mirror(true, 1, WHITE, 0.4, 0); // mirror with a perturbed reflection
 	Material white_light(false, 0, WHITE, 0, 20);
@@ -65,21 +65,15 @@ int main()
 	//Sphere test_ball(Point3D(8, -2, -3.4), 1.6, LAMBERT, GREEN);
 	Sphere test_ball(Point3D(8, -2, -3.4), 1.6, orange_matte);
 	Rectangle right_mirror(Point3D(12.2, 1.2, -4), Point3D(10.4, 4.8, -4), Point3D(12.2, 1.2, 4), Point3D(10.4, 4.8, 4), mirror);
-	Sphere glass_ball(Point3D(5, -2.5, -3.7), 1.3, GLASS, WHITE);
-	Sphere glass_ball2(Point3D(6, 2.8, -3.3), 1.7, GLASS, WHITE);
-	Sphere center_ball(Point3D(6, 0, -3.7), 1.3, GLASS, WHITE);
 
 	// Lights
 	// old Rectangle ceiling_light(Point3D(8, -1, 4.99), Point3D(10, -1, 4.99), Point3D(8, 1, 4.99), Point3D(10, 1, 4.99), LIGHT, WHITE);
 	Rectangle ceiling_light(Point3D(10, -1, 4.99), Point3D(10, 1, 4.99), Point3D(8, -1, 4.99), Point3D(8, 1, 4.99), white_light);
-	Rectangle right_wall_light(Point3D(9, 5.99, -1), Point3D(8, 5.99, -1), Point3D(9, 5.99, 0), Point3D(8, 5.99, 0), white_light); // fucks up, unused
-	Rectangle ceiling_light2(Point3D(7.5, 2, 4.99), Point3D(7.5, 3, 4.99), Point3D(6.5, 2, 4.99), Point3D(6.5, 2, 4.99), LIGHT, WHITE);
-	Rectangle back_light(Point3D(-1.5, -0.5, 3), Point3D(-1.5, 0.5, 3), Point3D(-1.5, -0.5, 4), Point3D(-1.5, 0.5, 4), LIGHT, WHITE);
 
 	// Include every object in this vector to add it to the scene
 	std::vector<Shape*> scene0_objects = { &roof, &floor, &roof_triangle_front, &roof_triangle_back, &floor_triangle_front, &floor_triangle_back,
 		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, &test_ball, &right_mirror,
-		&ceiling_light, &right_wall_light};
+		&ceiling_light};
 
 	for (int i = 0; i < scene0_objects.size(); i++) {
 		//std::cout << "\nAdding obj " << i;

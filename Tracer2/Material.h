@@ -29,13 +29,9 @@ public:
 	// Calculate surface interactions (reflection/transmission) and recursively call trace_ray
 	Color scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
-	Color get_color() {
-		return color;
-	}
-
 	Ray* reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
-	double get_radiance(Scene myscene, Ray& r, hit_record rec);
+	Color get_radiance(Scene myscene, Ray& r, hit_record rec);
 
 	double get_rho() {
 		return rho;
@@ -77,8 +73,8 @@ public:
 	double rho; // The probability of ray termination
 	double perturbation; // The radius of a unit sphere in which the normal is dislocated
 	bool mirror; // Whether the material reflects perfectly
-	Color color; // Color of the material
 	double lum; // Intensity of the light; set to 0 if material is not a light source
+	Color color;
 
 private:
 	// Material properties: Reflectivity
