@@ -78,8 +78,12 @@ double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point,
 			}
 		}
 
-		radiance += 20 * (radiance_cur_ls * area * lambertian_reflector / shadow_rays); //Multiply the radiance from current light source with the area light source and lambertian reflector 
+		radiance += 200 * (radiance_cur_ls * area * lambertian_reflector / shadow_rays); //Multiply the radiance from current light source with the area light source and lambertian reflector 
 																					//and divide with the number of shadow rays.
+	}
+
+	if (radiance < 0) {
+		radiance = 0;
 	}
 
 	//Return the radiance multiplied with color of the object.
@@ -142,11 +146,23 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 	}
 
 	if (nearest_object != nullptr) {
-		
 		// Get the radiance from direct light, and color as well as rho for the material.
 		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
 		origin_ray.color = nearest_object->get_material().get_color();
 		origin_ray.rho = nearest_object->get_material().get_rho();
+
+		//If hit light source - don't send a reflective ray!
+		if (nearest_object->get_material().light()) {
+			origin_ray.hit_light = true;
+			return origin_ray;
+		}
+
+		// Russian roulette
+		double rand = random_double();
+		if (rand > origin_ray.rho) {
+			// Early termination
+			return origin_ray;
+		}
 
 		// Reflect the ray
 		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
@@ -156,7 +172,7 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 	}
 	else {
 		// No collision, terminate ray
-		origin_ray.color = { 1,0,0 };
+		origin_ray.color = { 0,0,0 };
 		return origin_ray;
 	}
 }
@@ -164,17 +180,24 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 Color terminate_ray(Scene myscene, Ray& r) {
 
 	//Base case
-	if (r.prev_ray == nullptr)
+	if (r.prev_ray == nullptr) {
+		
+		if (r.hit_light) {
+			return Color(7, 7, 7);
+		}
 		//Direct light
 		return r.radiance * r.color;
-	else 
-		//Recursion to calculate indirect light, add the direct light to the result. 
-		return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray);
+	}
+	else
+		//Recursion to calculate indirect light, add the direct light to the result.
+		return (r.radiance * r.color * (1 - r.rho)) + terminate_ray(myscene, *r.prev_ray);
+		//return (r.radiance * r.color * r.rho / M_PI) + terminate_ray(myscene, *r.prev_ray);
+		//return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray);
+
 
 	//Används ej, försökte ta med rho (hur mycket ljus som reflekteras, bilden blev bara svart).
-	//return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray) * r.rho;
+		//return (r.radiance * r.color) + terminate_ray(myscene, *r.prev_ray) * (1 - r.rho);
 }
-
 
 // Debug function, prints every ray inside a raypath
 void print_raypath(Ray& first_ray) {

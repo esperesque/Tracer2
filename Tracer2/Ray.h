@@ -38,6 +38,7 @@ public:
 	Color color = Color(0, 0, 0);
 	double rho = 0;
 	double radiance = 0;
+	bool hit_light = false; // The ray terminated on a light source
 private:
 	Point3D origin;
 	Vec3 direction;

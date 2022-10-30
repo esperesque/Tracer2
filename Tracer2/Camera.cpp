@@ -19,6 +19,8 @@ void Camera::take_picture(Scene myscene, std::string filename) const {
 	// Render an image and save it as filename.png
 	uint8_t* pixels = new uint8_t[width * height * channels];
 	int index = 0;
+	double highest_value = 0;
+	double* dbl_pixels = new double[width * height * channels];
 
 	for (int i = height - 1; i >= 0; i--) {
 		double percent = floor((double(height - i) / double(height)) * 100);
@@ -47,12 +49,35 @@ void Camera::take_picture(Scene myscene, std::string filename) const {
 
 			//std::cout << "\nPixel color is " << pixel_color;
 
-			pixels[index++] = static_cast<int>(255.999 * pixel_color.get_x());
-			pixels[index++] = static_cast<int>(255.999 * pixel_color.get_y());
-			pixels[index++] = static_cast<int>(255.999 * pixel_color.get_z());
+			if (pixel_color.get_x() > highest_value) {
+				highest_value = pixel_color.get_x();
+			}
+			if (pixel_color.get_y() > highest_value) {
+				highest_value = pixel_color.get_y();
+			}
+			if (pixel_color.get_z() > highest_value) {
+				highest_value = pixel_color.get_z();
+			}
+
+			dbl_pixels[index++] = pixel_color.get_x();
+			dbl_pixels[index++] = pixel_color.get_y();
+			dbl_pixels[index++] = pixel_color.get_z();
+			//pixels[index++] = static_cast<int>(255.999 * pixel_color.get_x());
+			//pixels[index++] = static_cast<int>(255.999 * pixel_color.get_y());
+			//pixels[index++] = static_cast<int>(255.999 * pixel_color.get_z());
+		}
+	}
+
+	index = 0;
+	for (int i = height - 1; i >= 0; i--) {
+		for (int j = 0; j < width; j++) {
+			pixels[index] = static_cast<int>(255.999 * (dbl_pixels[index++] / highest_value));
+			pixels[index] = static_cast<int>(255.999 * (dbl_pixels[index++] / highest_value));
+			pixels[index] = static_cast<int>(255.999 * (dbl_pixels[index++] / highest_value));
 		}
 	}
 	
+	//std::cout << "\nThe highest pixel color value was " << highest_value;
 	filename += ".png";
 
 	// Convert the string to a c-string
@@ -87,6 +112,8 @@ void Camera::render_normals(Scene myscene, std::string filename) const {
 			//Color pixel_color = ray_color(r);
 			//Color pixel_color = send_ray(myscene, r);
 
+
+
 			//std::cout << "\nPixel color is " << pixel_color;
 
 			pixels[index++] = static_cast<int>(255.999 * pixel_color.get_x());
@@ -96,6 +123,17 @@ void Camera::render_normals(Scene myscene, std::string filename) const {
 	}
 
 	filename += ".png";
+
+	// Checking the highest pixel color value
+
+	double highest_pixel_value;
+	
+	index = 0;
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+
+		}
+	}
 
 	// Convert the string to a c-string
 	const char* c = filename.c_str();
