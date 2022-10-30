@@ -1,0 +1,10 @@
+
+*.vsidx
+*.db
+*.db-shm
+*.opendb
+*.ipch
+*.obj
+*.tlog
+*.idb
+*.pdb
