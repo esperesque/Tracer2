@@ -44,6 +44,8 @@ int main()
 	Material white_light(false, 0, WHITE, 0, 20);
 	Material red_cornell(false, 1, RED, 0, 0);
 	Material green_cornell(false, 1, GREEN, 0, 0);
+	Material glass(false, 1, WHITE, 0, 0);
+	glass.is_transparent = true;
 
 	// Define scene 0, Mark's Room
 	Scene scene0;
@@ -67,7 +69,7 @@ int main()
 
 	// Objects apart from the walls
 	//Sphere test_ball(Point3D(8, -2, -3.4), 1.6, LAMBERT, GREEN);
-	Sphere test_ball(Point3D(9, -2, -3.4), 1.6, orange_matte);
+	Sphere test_ball(Point3D(9, -2, -3.4), 1.6, glass);
 	Rectangle right_mirror(Point3D(12.2, 1.2, -4), Point3D(10.4, 4.8, -4), Point3D(12.2, 1.2, 4), Point3D(10.4, 4.8, 4), mirror);
 	Sphere glass_ball(Point3D(5, -2.5, -3.7), 1.3, GLASS, WHITE);
 	Sphere glass_ball2(Point3D(6, 2.8, -3.3), 1.7, GLASS, WHITE);
@@ -128,13 +130,13 @@ int main()
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(3); //set anti-aliasing
+	cam1.set_aa(15); //set anti-aliasing
 	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
 	cam1.set_depth(3); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "mirror_3aa");
+	cam1.take_picture(scene0, "glass_test_15aa");
 	// 1008 seconds
 	// 1006 seconds
 

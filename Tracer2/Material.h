@@ -37,7 +37,7 @@ public:
 
 	Ray* getRandomDirection(const Ray& r, hit_record& rec);
 
-	Ray transparent(Scene& myscene, const Ray& r, hit_record& rec);
+	Ray* transparent(Scene& myscene, const Ray& r, hit_record& rec);
 
 	double get_radiance(Scene myscene, Ray& r, hit_record rec);
 
@@ -81,6 +81,7 @@ public:
 	double rho; // The probability of ray termination
 	double perturbation; // The radius of a unit sphere in which the normal is dislocated
 	bool mirror; // Whether the material reflects perfectly
+	bool is_transparent = false;
 	Color color; // Color of the material
 	double lum; // Intensity of the light; set to 0 if material is not a light source
 

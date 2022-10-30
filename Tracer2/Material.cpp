@@ -29,6 +29,9 @@ Ray* Material::reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int de
 		ref_ray = new Ray(r.at(rec.t), unit_vector(r.get_direction() - 2 * dot(r.get_direction(), rec.normal) * rec.normal));
 		//ref_ray = new Ray(transparent(myscene, r, rec));
 	}
+	else if (is_transparent) {
+		ref_ray = transparent(myscene, r, rec);
+	}
 	else {
 		ref_ray = getRandomDirection(r, rec);
 	}
@@ -76,7 +79,7 @@ Ray* Material::getRandomDirection(const Ray& r, hit_record& rec){
 	return rayOut;
 }
 
-Ray Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
+Ray* Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
 	float n1 = 1;
 	float n2 = rec.RI;
 	float cost = dot(rec.normal, r.get_direction() * -1);
@@ -97,17 +100,21 @@ Ray Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
 		tmp = { 0,0,0 };
 
 	Vec3 T = unit_vector(tmp); //refraction
-	Ray refl_ray{ r.at(rec.t), R};
-	Ray refr_ray{ r.at(rec.t), T};
-
+	
 	//Ray refl_ray2 = build_path(myscene, refl_ray);	//Trace the reflection ray
 	//Ray refr_ray2 = build_path(myscene, refr_ray); 	//Trace the refraction ray
 
+	double R0 = pow((n1 - n2) / (n1 + n2), 2);
+	double R_coeff = R0 + (1 - R0) * pow(1 - cos(cost), 5); //reflection coeff
+	double T_coeff = R_coeff - 1; //transmission coeff
 	double rand = random_double();
-	if (rand >= 0.5) 
-		 return build_path(myscene, refl_ray);	//Trace the reflection ray
-	else 
-		 return build_path(myscene, refr_ray); 	//Trace the refraction ray
 
-	//Idk what to do now.
+	if (rand <= R_coeff) {
+		Ray* refl_ray = new Ray(r.at(rec.t), R);
+		return refl_ray;	//Trace the reflection ray
+	}
+	else {
+		Ray* refr_ray = new Ray(r.at(rec.t), T);
+		return refr_ray; 	//Trace the refraction ray
+	}
 }
