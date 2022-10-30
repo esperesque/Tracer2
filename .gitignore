@@ -8,3 +8,10 @@
 *.tlog
 *.idb
 *.pdb
+.vs/Tracer2/v17/.suo
+*.db
+*.db-wal
+*.obj
+*.ilk
+*.recipe
+*.tlog

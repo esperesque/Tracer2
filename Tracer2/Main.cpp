@@ -134,7 +134,7 @@ int main()
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "mirror_30aa");
+	cam1.take_picture(scene0, "mirror_3aa");
 	// 1008 seconds
 	// 1006 seconds
 

@@ -35,6 +35,8 @@ public:
 
 	Ray* reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth);
 
+	Ray* getRandomDirection(const Ray& r, hit_record& rec);
+
 	double get_radiance(Scene myscene, Ray& r, hit_record rec);
 
 	double get_rho() {
