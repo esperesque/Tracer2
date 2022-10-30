@@ -157,13 +157,6 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 			return origin_ray;
 		}
 
-		// Russian roulette
-		double rand = random_double();
-		if (rand > origin_ray.rho) {
-			// Early termination
-			return origin_ray;
-		}
-
 		// Reflect the ray
 		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
 		origin_ray.next_ray = ref_ray;

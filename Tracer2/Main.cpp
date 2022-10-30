@@ -128,7 +128,7 @@ int main()
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(30); //set anti-aliasing
+	cam1.set_aa(3); //set anti-aliasing
 	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
 	cam1.set_depth(3); // set maximum recursive depth
 

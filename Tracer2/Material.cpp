@@ -27,6 +27,7 @@ Ray* Material::reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int de
 	if (mirror) {
 		// Perfect mirror reflection (todo: add perturbation)
 		ref_ray = new Ray(r.at(rec.t), unit_vector(r.get_direction() - 2 * dot(r.get_direction(), rec.normal) * rec.normal));
+		//ref_ray = new Ray(transparent(myscene, r, rec));
 	}
 	else {
 		ref_ray = getRandomDirection(r, rec);
@@ -73,4 +74,40 @@ Ray* Material::getRandomDirection(const Ray& r, hit_record& rec){
 		rayOut = new Ray(r.at(rec.t), directionRay);
 	}
 	return rayOut;
+}
+
+Ray Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
+	float n1 = 1;
+	float n2 = rec.RI;
+	float cost = dot(rec.normal, r.get_direction() * -1);
+
+	Vec3 N = rec.normal;
+	if (cost < 0)
+		cost = -cost;
+	else
+	{
+		std::swap(n1, n2);
+		N = N * -1;
+	}
+
+	Vec3 R = unit_vector(r.get_direction() - 2 * dot(r.get_direction(), N) * N);; //perfect reflection
+	Vec3 tmp = ((n1 / n2) * r.get_direction() + N * (-n1 / n2) * dot(r.get_direction(), N)) 
+				- sqrt(1 - pow((n1 / n2), 2) * (1 - pow(dot(r.get_direction(), N), 2))); //refract.
+	if (tmp.get_x() < 0 || tmp.get_y() < 0 || tmp.get_z() < 0)
+		tmp = { 0,0,0 };
+
+	Vec3 T = unit_vector(tmp); //refraction
+	Ray refl_ray{ r.at(rec.t), R};
+	Ray refr_ray{ r.at(rec.t), T};
+
+	//Ray refl_ray2 = build_path(myscene, refl_ray);	//Trace the reflection ray
+	//Ray refr_ray2 = build_path(myscene, refr_ray); 	//Trace the refraction ray
+
+	double rand = random_double();
+	if (rand >= 0.5) 
+		 return build_path(myscene, refl_ray);	//Trace the reflection ray
+	else 
+		 return build_path(myscene, refr_ray); 	//Trace the refraction ray
+
+	//Idk what to do now.
 }

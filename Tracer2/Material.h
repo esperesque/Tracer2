@@ -37,6 +37,8 @@ public:
 
 	Ray* getRandomDirection(const Ray& r, hit_record& rec);
 
+	Ray transparent(Scene& myscene, const Ray& r, hit_record& rec);
+
 	double get_radiance(Scene myscene, Ray& r, hit_record rec);
 
 	double get_rho() {

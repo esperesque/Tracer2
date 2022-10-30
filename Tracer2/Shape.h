@@ -10,6 +10,7 @@ struct hit_record {
 	double t; // distance along the ray where the intersection occurs
 	double u;
 	double v;
+	double RI; //refractive indice
 	bool front_face;
 
 	inline void set_face_normal(const Ray& r, const Vec3& outward_normal) {

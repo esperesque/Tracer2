@@ -92,6 +92,10 @@ public:
 		return t * v;
 	}
 
+	inline friend Vec3 operator-(const Vec3& v, double t) {
+		return Vec3(v.x - t, v.y - t, v.z - t);
+	}
+
 	inline friend Vec3 operator/(Vec3 v, double t) {
 		return (1 / t) * v;
 	}
