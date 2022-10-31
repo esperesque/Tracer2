@@ -13,6 +13,8 @@
 #include <vector>
 #include <time.h>
 
+
+
 int main()
 {
 	// Define some colors
@@ -26,6 +28,7 @@ int main()
 	const Color MID_GRAY(0.5, 0.5, 0.5);
 	const Color LIGHT_GRAY(0.7, 0.7, 0.7);
 	const Color WHITE(1, 1, 1);
+	const Color BLACK(0, 0, 0);
 
 	// Old way of definining materials
 	Material MIRROR(MaterialType::MIRROR);
@@ -80,10 +83,10 @@ int main()
 	Point3D tr1(8, 0, -5);
 	Point3D tr2(8, 4, -5);
 	Point3D tr3(8, 1, -2);
-	Triangle tetra_bottom(tr0, tr1, tr2, other_matte);
-	Triangle tetra_left(tr3, tr1, tr0, other_matte);
-	Triangle tetra_back(tr3, tr2, tr1, other_matte);
-	Triangle tetra_right(tr3, tr0, tr2, other_matte);
+	Triangle tetra_bottom(tr0, tr1, tr2, red_cornell);
+	Triangle tetra_left(tr3, tr1, tr0, red_cornell);
+	Triangle tetra_back(tr3, tr2, tr1, red_cornell);
+	Triangle tetra_right(tr3, tr0, tr2, red_cornell);
 
 	// Lights
 	// old Rectangle ceiling_light(Point3D(8, -1, 4.99), Point3D(10, -1, 4.99), Point3D(8, 1, 4.99), Point3D(10, 1, 4.99), LIGHT, WHITE);
@@ -95,7 +98,7 @@ int main()
 	// Include every object in this vector to add it to the scene
 	std::vector<Shape*> scene0_objects = { &roof, &floor, &roof_triangle_front, &roof_triangle_back, &floor_triangle_front, &floor_triangle_back,
 		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, &test_ball,
-		&tetra_bottom, &tetra_left, &tetra_back, &tetra_right,
+		&tetra_bottom, &tetra_left, &tetra_back, &tetra_right, &right_mirror,
 		&ceiling_light};
 
 	for (int i = 0; i < scene0_objects.size(); i++) {
@@ -130,15 +133,18 @@ int main()
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(15); //set anti-aliasing
+	cam1.set_aa(6); //set anti-aliasing
 	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
 	cam1.set_depth(3); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "glass_test_15aa");
-	// 1008 seconds
-	// 1006 seconds
+	cam1.take_picture(scene0, "glass_test_6aa");
+
+	// reflected_rays and refracted_rays are global variables declared in Scene.h (since it's common to both Main and Material)
+	// VERY BAD PROGRAMMING PRACTICE!!
+	std::cout << "\nNumber of reflected rays: " << reflected_rays;
+	std::cout << "\nNumber of refracted rays: " << refracted_rays;
 
 	printf("\nTime taken: %.2fs\n", ((double)clock() - tStart) / CLOCKS_PER_SEC);
 }

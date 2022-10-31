@@ -9,7 +9,7 @@ bool Ray::is_blocked(Scene& room, double distance) {
 
 	for (int i = 0; i < room.get_size(); i++) {
 		if (room[i]->collision(*this, rec)) {
-			if (room[i]->get_material().glass()) {
+			if (room[i]->get_material().is_transparent) {
 				// ignore glass material when casting shadow rays - hacky solution, in the future calculate refraction/reflection
 				continue;
 			}
