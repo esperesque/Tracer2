@@ -71,18 +71,19 @@ int main()
 	Rectangle l_wall_b(Point3D(-3, 0, -5), Point3D(0, -6, -5), Point3D(-3, 0, 5), Point3D(0, -6, 5), white_wall);
 
 	// Objects apart from the walls
-	//Sphere test_ball(Point3D(8, -2, -3.4), 1.6, LAMBERT, GREEN);
-	Sphere test_ball(Point3D(9, -2, -3.4), 1.6, glass);
 	Rectangle right_mirror(Point3D(12.2, 1.2, -4), Point3D(10.4, 4.8, -4), Point3D(12.2, 1.2, 4), Point3D(10.4, 4.8, 4), mirror);
-	Sphere glass_ball(Point3D(5, -2.5, -3.7), 1.3, GLASS, WHITE);
-	Sphere glass_ball2(Point3D(6, 2.8, -3.3), 1.7, GLASS, WHITE);
-	Sphere center_ball(Point3D(6, 0, -3.7), 1.3, GLASS, WHITE);
+	Sphere glass_ball1(Point3D(9, -2, -3.4), 1.6, glass);
+	Sphere glass_ball2(Point3D(8.5, 4, 1.5), 0.9, glass);
+	Sphere glass_ball3(Point3D(6, -2, 1.0), 1.2, glass);
+
+	//Sphere test_ball(Point3D(5, -3, -3.4), 1.6, LAMBERT, GREEN);
+	Sphere test_ball2(Point3D(9, -2, -3.4), 1.6, orange_matte);
 
 	// A tetrahedron
-	Point3D tr0(5, 1, -4);
-	Point3D tr1(8, 0, -4);
-	Point3D tr2(8, 4, -4);
-	Point3D tr3(8, 1, -2);
+	Point3D tr0(5, 1.8, -4);
+	Point3D tr1(8, 0.8, -4);
+	Point3D tr2(8, 4.8, -4);
+	Point3D tr3(8, 1.8, -2);
 	Triangle tetra_bottom(tr0, tr1, tr2, red_cornell);
 	Triangle tetra_left(tr3, tr1, tr0, red_cornell);
 	Triangle tetra_back(tr3, tr2, tr1, red_cornell);
@@ -97,49 +98,26 @@ int main()
 
 	// Include every object in this vector to add it to the scene
 	std::vector<Shape*> scene0_objects = { &roof, &floor, &roof_triangle_front, &roof_triangle_back, &floor_triangle_front, &floor_triangle_back,
-		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, &test_ball,
+		&l_wall_f, &r_wall_f, &r_wall_s, &l_wall_s, &r_wall_b, &l_wall_b, 
 		&tetra_bottom, &tetra_left, &tetra_back, &tetra_right, &right_mirror,
-		&ceiling_light};
+		&ceiling_light, &test_ball2};
 
 	for (int i = 0; i < scene0_objects.size(); i++) {
 		//std::cout << "\nAdding obj " << i;
 		scene0.add_shape(scene0_objects[i]);
 	}
 
-	// Define cornell_scene, a cornell box
-
-	Rectangle cornell_floor(Point3D(-5, -5, -5), Point3D(-5, 5, -5), Point3D(10, -5, -5), Point3D(10, 5, -5), floor_material);
-	Rectangle cornell_ceiling(Point3D(-5, 5, 5), Point3D(-5, -5, 5), Point3D(10, 5, 5), Point3D(10, -5, 5), floor_material);
-	Rectangle cornell_backwall(Point3D(10, -5, -5), Point3D(10, 5, -5), Point3D(10, -5, 5), Point3D(10, 5, 5), white_wall);
-	Rectangle cornell_rwall(Point3D(10, 5, -5), Point3D(-5, 5, -5), Point3D(10, 5, 5), Point3D(-5, 5, 5), red_cornell);
-	Rectangle cornell_lwall(Point3D(-5, -5, -5), Point3D(10, -5, -5), Point3D(-5, -5, 5), Point3D(10, -5, 5), green_cornell);
-	Rectangle cornell_light(Point3D(6.5, -1, 4.99), Point3D(6.5, 1, 4.99), Point3D(4.5, -1, 4.99), Point3D(4.5, 1, 4.99), white_light);
-
-	Rectangle c_box_front(Point3D(5, -2.5, -5), Point3D(6.5, -1, -5), Point3D(5, -2.5, -2), Point3D(6.5, -1, -2), white_wall);
-	Rectangle c_box_top(Point3D(5, -2.5, -2), Point3D(6.5, -1, -2), Point3D(6.5, -4, -2), Point3D(8, -2.5, -2), white_wall);
-	Rectangle c_box_left(Point3D(6.5, -4, -5), Point3D(5, -2.5, -5), Point3D(6.5, -4, -2), Point3D(5, -2.5, -2), white_wall);
-
-	Sphere c_sphere(Point3D(4.8, 2.3, -4), 1.0, white_wall);
-
-	std::vector<Shape*> cornell_scene_objects = { &cornell_floor, &cornell_ceiling, &cornell_backwall, &cornell_rwall, &cornell_lwall,
-		&c_box_front, &c_box_top, &c_box_left, &c_sphere,
-		&cornell_light };
-	Scene cornell_scene;
-	for (int i = 0; i < cornell_scene_objects.size(); i++) {
-		cornell_scene.add_shape(cornell_scene_objects[i]);
-	}
-
 	// Define cameras, take pictures
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(6); //set anti-aliasing
-	cam1.set_srays(3); //set shadow rays, hårdkodat i tracer.cpp!
-	cam1.set_depth(3); // set maximum recursive depth
+	cam1.set_aa(3); //set anti-aliasing
+	cam1.set_srays(8); //set shadow rays
+	cam1.set_depth(7); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "glass_test_6aa");
+	cam1.take_picture(scene0, "aa3_srays8_depth7_shadow");
 
 	printf("\nTime taken: %.2fs\n", ((double)clock() - tStart) / CLOCKS_PER_SEC);
 }
