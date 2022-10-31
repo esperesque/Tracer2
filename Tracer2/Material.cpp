@@ -27,7 +27,6 @@ Ray* Material::reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int de
 	if (mirror) {
 		// Perfect mirror reflection (todo: add perturbation)
 		ref_ray = new Ray(r.at(rec.t), unit_vector(r.get_direction() - 2 * dot(r.get_direction(), rec.normal) * rec.normal));
-		//ref_ray = new Ray(transparent(myscene, r, rec));
 	}
 	else if (is_transparent) {
 		ref_ray = transparent(myscene, r, rec);
@@ -42,9 +41,8 @@ Ray* Material::reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int de
 
 Ray* Material::getRandomDirection(const Ray& r, hit_record& rec){
 	double p = random_double();
-	Ray* rayOut;
+	Ray* rayOut = new Ray();
 	int n = 1;
-	Vec3 directionRay(0, 0, 0);
 
 	for (int i = 0; i < n; i++) {
 		double yi = random_double();
@@ -75,9 +73,9 @@ Ray* Material::getRandomDirection(const Ray& r, hit_record& rec){
 		double z = x0 * X.get_z() + y0 * Y.get_z() + z0 * Z.get_z();
 
 		Vec3 directionRay = { x,y,z };
-		
+		rayOut = new Ray(r.at(rec.t), directionRay);
 	}
-	rayOut = new Ray(r.at(rec.t), directionRay);
+
 	return rayOut;
 }
 
