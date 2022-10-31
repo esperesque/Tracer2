@@ -2,9 +2,6 @@
 
 #include <vector>
 #include "Shape.h"
-
-int reflected_rays = 0;
-int refracted_rays = 0;
 // A collection of objects to be rendered
 
 class Scene {

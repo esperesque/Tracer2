@@ -11,12 +11,12 @@ Color Material::scatter(Scene& myscene, const Ray& r, hit_record& rec, int depth
 }
 
 // Get the radiance from direct light and such
-double Material::get_radiance(Scene myscene, Ray& r, hit_record rec) {
+double Material::get_radiance(Scene myscene, Ray& r, hit_record rec, int shadow_rays) {
 	if (lum > 0 || mirror || is_transparent)
 		return 1;
 	else {
 		// do direct light calculations
-		return direct_light(myscene, 3, r.at(rec.t), rec.normal);
+		return direct_light(myscene, shadow_rays, r.at(rec.t), rec.normal);
 	}
 }
 
@@ -133,12 +133,10 @@ Ray* Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
 
 	if (rand <= R_coeff && false) {
 		Ray* refl_ray = new Ray(r.at(rec.t), R);
-		reflected_rays++;
 		return refl_ray;	//Trace the reflection ray
 	}
 	else {
 		Ray* refr_ray = new Ray(r.at(rec.t), d_ref);
-		refracted_rays++;
 		return refr_ray; 	//Trace the refraction ray
 	}
 }

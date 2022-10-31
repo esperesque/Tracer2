@@ -38,7 +38,7 @@ void Camera::take_picture(Scene myscene, std::string filename) const {
 				//pixel_color += send_ray(myscene, r, max_depth);
 				//pixel_color += trace_ray(myscene, r, max_depth);
 				//Ray last_ray = build_path(myscene, r);
-				pixel_color += path_tracer(myscene, r);
+				pixel_color += path_tracer(myscene, r, shadow_rays, max_depth);
 			}
 
 			auto scale = 1.0 / samples_per_pixel;

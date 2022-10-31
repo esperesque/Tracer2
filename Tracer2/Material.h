@@ -39,7 +39,7 @@ public:
 
 	Ray* transparent(Scene& myscene, const Ray& r, hit_record& rec);
 
-	double get_radiance(Scene myscene, Ray& r, hit_record rec);
+	double get_radiance(Scene myscene, Ray& r, hit_record rec, int shadow_rays);
 
 	double get_rho() {
 		return rho;

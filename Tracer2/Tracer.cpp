@@ -90,24 +90,9 @@ double direct_light(Scene& myscene, int shadow_rays, Point3D intersection_point,
 	return radiance;
 }
 
-
-//// Return the amount of indirect light hitting a surface
-//Color indirect_light(Scene& myscene, Vec3 object_normal, Ray& r) {
-//	Vec3 X = unit_vector(r.get_direction() - (dot(r.get_direction(), object_normal) * object_normal));
-//	Vec3 Z = object_normal;
-//	Vec3 Y = cross((X * -1.0f), Z);
-//
-//	//Reflection from a lambertian surface is uniformly distributed in all directions, thus the PDF is constant and equals 1/2pi.
-//	const float PDF = 1 / (2 * M_PI);
-//
-//	for (int i = 0; i < myscene.get_lights(); i++) {
-//
-//	}
-//}
-
-Color path_tracer(Scene myscene, Ray& r) {
+Color path_tracer(Scene myscene, Ray& r, int shadow_rays, int max_depth) {
 	// Build a ray path and save the final ray
-	Ray last_ray = build_path(myscene, r);
+	Ray last_ray = build_path(myscene, r, shadow_rays, max_depth);
 
 	// Start from the final ray in the ray path and calculate the resulting color
 	Color pixel_color = terminate_ray(myscene, last_ray);
@@ -119,9 +104,8 @@ Color path_tracer(Scene myscene, Ray& r) {
 	return pixel_color;
 }
 
-Ray build_path(Scene myscene, Ray& origin_ray) {
-
-	if (origin_ray.depth >= 7) {
+Ray build_path(Scene myscene, Ray& origin_ray, int shadow_rays, int max_depth) {
+	if (origin_ray.depth >= max_depth) {
 		// sanity check
 		return origin_ray;
 	}
@@ -147,7 +131,7 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 
 	if (nearest_object != nullptr) {
 		// Get the radiance from direct light, and color as well as rho for the material.
-		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec);
+		origin_ray.radiance = nearest_object->get_material().get_radiance(myscene, origin_ray, nearest_rec, shadow_rays);
 		origin_ray.color = nearest_object->get_material().get_color();
 		origin_ray.rho = nearest_object->get_material().get_rho();
 
@@ -161,7 +145,7 @@ Ray build_path(Scene myscene, Ray& origin_ray) {
 		ref_ray = nearest_object->get_material().reflect_ray(myscene, origin_ray, nearest_rec, origin_ray.depth + 1);
 		origin_ray.next_ray = ref_ray;
 		ref_ray->prev_ray = &origin_ray;
-		return build_path(myscene, *ref_ray);
+		return build_path(myscene, *ref_ray, shadow_rays, max_depth);
 	}
 	else {
 		// No collision, terminate ray

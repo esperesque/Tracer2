@@ -79,9 +79,9 @@ int main()
 	Sphere center_ball(Point3D(6, 0, -3.7), 1.3, GLASS, WHITE);
 
 	// A tetrahedron
-	Point3D tr0(5, 1, -5);
-	Point3D tr1(8, 0, -5);
-	Point3D tr2(8, 4, -5);
+	Point3D tr0(5, 1, -4);
+	Point3D tr1(8, 0, -4);
+	Point3D tr2(8, 4, -4);
 	Point3D tr3(8, 1, -2);
 	Triangle tetra_bottom(tr0, tr1, tr2, red_cornell);
 	Triangle tetra_left(tr3, tr1, tr0, red_cornell);
@@ -140,11 +140,6 @@ int main()
 	clock_t tStart = clock();
 
 	cam1.take_picture(scene0, "glass_test_6aa");
-
-	// reflected_rays and refracted_rays are global variables declared in Scene.h (since it's common to both Main and Material)
-	// VERY BAD PROGRAMMING PRACTICE!!
-	std::cout << "\nNumber of reflected rays: " << reflected_rays;
-	std::cout << "\nNumber of refracted rays: " << refracted_rays;
 
 	printf("\nTime taken: %.2fs\n", ((double)clock() - tStart) / CLOCKS_PER_SEC);
 }
