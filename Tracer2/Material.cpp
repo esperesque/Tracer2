@@ -23,7 +23,7 @@ double Material::get_radiance(Scene myscene, Ray& r, hit_record rec, int shadow_
 Ray* Material::reflect_ray(Scene& myscene, const Ray& r, hit_record& rec, int depth) {
 	
 	Ray* ref_ray;
-	
+
 	if (mirror) {
 		// Perfect mirror reflection (todo: add perturbation)
 		ref_ray = new Ray(r.at(rec.t), unit_vector(r.get_direction() - 2 * dot(r.get_direction(), rec.normal) * rec.normal));
@@ -81,62 +81,46 @@ Ray* Material::getRandomDirection(const Ray& r, hit_record& rec){
 	return rayOut;
 }
 
-Ray* Material::transparent(Scene& myscene, const Ray& r, hit_record& rec){
-	float n1 = 1;
-	float n2 = rec.RI;
-	n2 = 1.5;
+Ray* Material::transparent(Scene& myscene, const Ray& r, hit_record& rec) {
+	double n1 = 1.0; //air
+	double n2 = 1.5; //glass
 
-	float cost = dot(rec.normal, r.get_direction() * -1);
+	Vec3 N = unit_vector(rec.normal);
+	Vec3 I = unit_vector(r.get_direction());
 
-	Vec3 N = rec.normal;
-	/* I'm unsure about this so I commented it out. We already have a way to check if the ray hit a front-facing
-	*  surface using the front_face bool inside hit_record, and using it instead gave better (but still incorrect) reflections
-	if (cost < 0)
-		cost = -cost;
-	else
-	{
-		std::swap(n1, n2);
-		N = N * -1;
-	}
-	*/
-
+	//Inside or outside the glass object?
 	if (!rec.front_face) {
 		// Modify refraction ratio if it's not a front face (ray exits object)
 		std::swap(n1, n2);
 		N = N * -1;
 	}
-	else {
-		cost = -cost;
-	}
+
+	//Schlicks law
+	double cosTeta = dot(-I, N);
+	double R0 = pow((n1 - n2) / (n1 + n2), 2);
+	double R_coeff = R0 + (1 - R0) * pow(1 - cosTeta, 5); //reflection coeff
+	double T_coeff = 1 - R_coeff; //transmission coeff
+
+	double criticalAngle = asin(n1 / n2);
+	double alpha = acos(cosTeta);
 
 	Vec3 R = unit_vector(r.get_direction() - 2 * dot(r.get_direction(), N) * N);; //perfect reflection
-	double R0 = pow((n1 - n2) / (n1 + n2), 2);
-	Vec3 tmp = ((n1 / n2) * r.get_direction() + N * (-n1 / n2) * dot(r.get_direction(), N)) 
-			- sqrt(1 - pow((n1 / n2), 2) * (1 - pow(dot(r.get_direction(), N), 2))); //refract.
-	
-	if (tmp.get_x() < 0 || tmp.get_y() < 0 || tmp.get_z() < 0)
-		tmp = { 0,0,0 };
+	Ray* reflectionRay = new Ray(r.at(rec.t), R);
 
-	// drefr = Rd0 + N (-R(N*d0) - sqrt(1 - R^2(1 - (N*d0)^2))
-
-	Vec3 T = unit_vector(tmp); //refraction
-
-	Vec3 d_ref = R0 * r.get_direction() + N * (-R0 * (dot(N, r.get_direction()) - sqrt(1 - (pow(R0, 2) * (1 - pow(dot(N, r.get_direction()), 2))))));
-	d_ref = unit_vector(d_ref);
-
-	double R_coeff = R0 + (1 - R0) * pow(1 - cos(cost), 5); //reflection coeff
-	double T_coeff =  1 - R_coeff; //transmission coeff
-
-	double rand = random_double();
-	//std::cout << "\nReflection coefficient was " << R_coeff;
-	//std::cout << "\nRefraction vector: " << d_ref;
-
-	if (rand <= R_coeff && false) {
-		Ray* refl_ray = new Ray(r.at(rec.t), R);
-		return refl_ray;	//Trace the reflection ray
+	// We need to test if the value of alpha gives a new transmitted ray
+	if (alpha > criticalAngle) {
+		// Totally reflected and no T exists
+		return reflectionRay;
 	}
+
 	else {
-		Ray* refr_ray = new Ray(r.at(rec.t), d_ref);
-		return refr_ray; 	//Trace the refraction ray
+		Vec3 T = unit_vector((n1 / n2) * I + N * (-(n1 / n2) * dot(N, I) - sqrt(1 - pow((n2 / n1), 2.0f) * (1.0f - pow(dot(N, I), 2)))));
+		Ray* refractionRay = new Ray(r.at(rec.t), T);
+		double rand = random_double();
+		if (rand < R_coeff ) {
+			return reflectionRay;	//Trace the reflection ray
+		}
+		
+		return refractionRay;
 	}
 }
