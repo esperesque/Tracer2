@@ -111,13 +111,13 @@ int main()
 	Vec3 eye_position(0, 0, -1);
 
 	Camera cam1(eye_position, 800, 800);
-	cam1.set_aa(3); //set anti-aliasing
-	cam1.set_srays(8); //set shadow rays
-	cam1.set_depth(7); // set maximum recursive depth
+	cam1.set_aa(2); //set anti-aliasing
+	cam1.set_srays(4); //set shadow rays
+	cam1.set_depth(6); // set maximum recursive depth
 
 	clock_t tStart = clock();
 
-	cam1.take_picture(scene0, "aa3_srays8_depth7_shadow");
+	cam1.take_picture(scene0, "aa2_srays4_depth6_shadow");
 
 	printf("\nTime taken: %.2fs\n", ((double)clock() - tStart) / CLOCKS_PER_SEC);
 }

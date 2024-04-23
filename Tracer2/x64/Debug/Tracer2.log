@@ -1,12 +1,6 @@
-﻿  Camera.cpp
-C:\GitHub\Illumi\Tracer2\Tracer2\Camera.cpp(129,9): warning C4101: 'highest_pixel_value': unreferenced local variable
-  Main.cpp
+﻿  Main.cpp
 C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(26,1): warning C4305: 'initializing': truncation from 'double' to 'float'
 C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(29,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(36,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\GitHub\Illumi\Tracer2\Tracer2\Triangle.h(41,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Material.cpp
-  Ray.cpp
-  Tracer.cpp
-  Generating Code...
   Tracer2.vcxproj -> C:\GitHub\Illumi\Tracer2\x64\Debug\Tracer2.exe
